@@ -1,13 +1,38 @@
-export default function Brands() {
+"use client";
+
+import { useEffect, useState } from "react";
+import { getBrands } from "../services/brands.services";
+
+const Brands = () => {
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const data = await getBrands();
+        console.log("Brands data:", data);
+        setBrands(data);
+      } catch (err) {
+        setError("Erreur lors du chargement des marques");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBrands();
+  }, []);
+
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
-    <section className="p-8">
-      <div>
-        <h1 className="text-2xl">Brands</h1>
-        <p>Informations utiles sur les marques.</p>
-      </div>
-      <div>
-        
-      </div>
-    </section>
+    <ul>
+      {brands.map((brand: any) => (
+        <li key={brand.id}>{brand.name}</li>
+      ))}
+    </ul>
   );
-}
+};
+
+export default Brands;
